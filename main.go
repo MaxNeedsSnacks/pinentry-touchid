@@ -26,7 +26,6 @@ import (
 	pinentryBinary "github.com/gopasspw/pinentry"
 	"github.com/jorgelbg/pinentry-touchid/sensor"
 	"github.com/keybase/go-keychain"
-	touchid "github.com/lox/go-touchid"
 )
 
 // AuthFunc is a function that runs some check to verify if the caller has access to the Keychain
@@ -121,7 +120,7 @@ func New() KeychainClient {
 	return KeychainClient{
 		logger:   logger,
 		promptFn: passwordPrompt,
-		authFn:   touchid.Authenticate,
+		authFn:   sensor.Authenticate,
 	}
 }
 
@@ -130,7 +129,7 @@ func WithLogger(logger *log.Logger) KeychainClient {
 	return KeychainClient{
 		logger:   logger,
 		promptFn: passwordPrompt,
-		authFn:   touchid.Authenticate,
+		authFn:   sensor.Authenticate,
 	}
 }
 
