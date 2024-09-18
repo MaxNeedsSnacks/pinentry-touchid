@@ -38,7 +38,7 @@ jobs:
         uses: goreleaser/goreleaser-action@v6
         with:
           version: '~> v0'
-          args: build --clean --snapshot
+          args: build --rm-dist --snapshot
 
       - name: Upload assets
         uses: actions/upload-artifact@v3
