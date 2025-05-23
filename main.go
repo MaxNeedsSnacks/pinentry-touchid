@@ -24,14 +24,14 @@ import (
 	"github.com/foxcpp/go-assuan/common"
 	"github.com/foxcpp/go-assuan/pinentry"
 	pinentryBinary "github.com/gopasspw/pinentry"
+	touchid "github.com/ikitsuchi/go-touchid"
 	"github.com/jorgelbg/pinentry-touchid/sensor"
 	"github.com/keybase/go-keychain"
-	touchid "github.com/lox/go-touchid"
 )
 
 // AuthFunc is a function that runs some check to verify if the caller has access to the Keychain
 // entry
-type AuthFunc func(string) (bool, error)
+type AuthFunc func(string, string, string) (bool, error)
 
 // PromptFunc is a function that asks a password from the user
 type PromptFunc func(pinentry.Settings) ([]byte, error)
@@ -121,7 +121,7 @@ func New() KeychainClient {
 	return KeychainClient{
 		logger:   logger,
 		promptFn: passwordPrompt,
-		authFn:   touchid.Authenticate,
+		authFn:   sensor.Authenticate,
 	}
 }
 
@@ -130,7 +130,7 @@ func WithLogger(logger *log.Logger) KeychainClient {
 	return KeychainClient{
 		logger:   logger,
 		promptFn: passwordPrompt,
-		authFn:   touchid.Authenticate,
+		authFn:   sensor.Authenticate,
 	}
 }
 
@@ -347,22 +347,36 @@ func GetPIN(authFn AuthFunc, promptFn PromptFunc, logger *log.Logger) GetPinFunc
 		}
 
 		var ok bool
-		if ok, err = authFn(fmt.Sprintf("access the PIN for %s", keychainLabel)); err != nil {
-			logger.Printf("Error authenticating with Touch ID: %s", err)
-			return "", assuanError(err)
+		ok, err = authFn(fmt.Sprintf("access the PIN for %s", keychainLabel), "Cancel", "Use Password")
+
+		if ok {
+			password, err := passwordFromKeychain(keychainLabel)
+			if err != nil {
+				log.Printf("Error fetching password from Keychain %s", err)
+			}
+			return password, nil
 		}
 
-		if !ok {
-			logger.Printf("Failed to authenticate")
-			return "", nil
-		}
-
-		password, err := passwordFromKeychain(keychainLabel)
 		if err != nil {
-			log.Printf("Error fetching password from Keychain %s", err)
+			logger.Printf("Error authenticating with Touch ID: %s", err)
+			if err == touchid.ErrUserCancel {
+				return "", assuanError(fmt.Errorf("user canceled authentication"))
+			}
+		} else {
+			logger.Printf("Failed to authenticate")
 		}
 
-		return password, nil
+		pin, err := promptFn(s)
+		if err != nil {
+			logger.Printf("Error calling pinentry program (%s): %s", pinentryBinary.GetBinary(), err)
+		}
+
+		if len(pin) == 0 {
+			logger.Printf("pinentry-mac didn't return a password")
+			return "", assuanError(fmt.Errorf("pinentry-mac didn't return a password"))
+		}
+
+		return string(pin), nil
 	}
 }
 
