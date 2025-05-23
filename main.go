@@ -433,19 +433,19 @@ func fixPINBinary(oldPath string) error {
 	return nil
 }
 
-// execvePinentryMac will replace the running process with `pinentry-mac`, using the execve(2) syscall.
+// execFallback will replace the running process with the fallback pinentry specified, using the execve(2) syscall.
 //
 // If everything is successful, this function will never return.
 // If something goes wrong, this function will return an error.
-func execvePinentryMac() error {
-	pinentryMacPath, err := exec.LookPath("pinentry-mac")
+func execFallback(name string) error {
+	fallbackPath, err := exec.LookPath(name)
 	if err != nil {
-		return fmt.Errorf("Unable to find pinentry-mac: %w", err)
+		return fmt.Errorf("Unable to find fallback %s: %w", name, err)
 	}
 
-	err = syscall.Exec(pinentryMacPath, os.Args, os.Environ())
+	err = syscall.Exec(fallbackPath, os.Args, os.Environ())
 	if err != nil {
-		return fmt.Errorf("Unable to execute pinentry-mac: %w", err)
+		return fmt.Errorf("Unable to execute fallback %s: %w", name, err)
 	}
 
 	return nil
@@ -454,12 +454,25 @@ func execvePinentryMac() error {
 func main() {
 	flag.Parse()
 
-	// If TouchID is not available, defer to pinentry-mac.
+	fallback := ""
+
+	// defer to pinentry_mac if necessary
 	if !touchid.IsTouchIDAvailable() {
-		err := execvePinentryMac()
+		// fmt.Println("TouchID is unavailable, falling back to pinentry_mac")
+		fallback = "pinentry-mac"
+	}
+
+	env := os.Getenv("PINENTRY_USER_DATA")
+	if strings.Contains(env, "USE_CURSES=1") {
+		// fmt.Println("USE_CURSES is enabled, falling back to pinentry_mac")
+		fallback = "pinentry-curses"
+	}
+
+	if fallback != "" {
+		err := execFallback(fallback)
 		returnErr := &common.Error{
 			Src:     common.ErrSrcPinentry,
-			SrcName: "pinentry-mac",
+			SrcName: fallback,
 			Code:    common.ErrNoPinEntry,
 			Message: err.Error(),
 		}

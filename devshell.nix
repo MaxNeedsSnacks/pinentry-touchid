@@ -7,6 +7,11 @@ pkgs.mkShell {
     go
     gopls
     gotools
+    delve
+
+    # unfortunately, the list of dependencies grows :')
+    pinentry_mac
+    pinentry-curses
   ];
 
   # Add environment variables
