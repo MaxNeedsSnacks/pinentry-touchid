@@ -4,8 +4,6 @@ github.com/enescakir/emoji v1.0.0 h1:W+HsNql8swfCQFtioDGDHCHri8nudlK1n5p2rHCJoog
 github.com/enescakir/emoji v1.0.0/go.mod h1:Bt1EKuLnKDTYpLALApstIkAjdDrS/8IAgTkKp+WKFD0=
 github.com/gopasspw/pinentry v0.0.2 h1:6OmkoTYMU05PmAJSIZSRjjhiQX15AstdgNa2KimH5XA=
 github.com/gopasspw/pinentry v0.0.2/go.mod h1:lR1WuNI96rXXBCgM601Ima3acnX3ZSPthIAuG6lHa68=
-github.com/ikitsuchi/go-touchid v0.0.0-20240209213127-7ae3f0f52931 h1:MgWHnx6JTsoGRcgWxNQmM+uq4gsAH+6MLSclnbU+ov8=
-github.com/ikitsuchi/go-touchid v0.0.0-20240209213127-7ae3f0f52931/go.mod h1:jZW8HiAPeebimmXuwJsZpJ3BxphXSDy6jr52pFs+Wjo=
 github.com/ikitsuchi/go-touchid v0.0.0-20240209215330-e41529c8ec08 h1:bN1Vipc/9+Yp+sTBH9ZOiUMmAWeDx6tgBnXhuPpqGFM=
 github.com/ikitsuchi/go-touchid v0.0.0-20240209215330-e41529c8ec08/go.mod h1:jZW8HiAPeebimmXuwJsZpJ3BxphXSDy6jr52pFs+Wjo=
 github.com/keybase/dbus v0.0.0-20220506165403-5aa21ea2c23a/go.mod h1:YPNKjjE7Ubp9dTbnWvsP3HT+hYnY6TfXzubYTBeUxc8=

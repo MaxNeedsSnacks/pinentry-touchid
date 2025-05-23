@@ -17,3 +17,10 @@ dist/
 
 # local binary
 pinentry
+
+# direnv
+.direnv/
+
+# nix
+result
+result-*
