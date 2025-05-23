@@ -25,7 +25,6 @@ import (
 	"github.com/foxcpp/go-assuan/pinentry"
 	pinentryBinary "github.com/gopasspw/pinentry"
 	touchid "github.com/ikitsuchi/go-touchid"
-	"github.com/jorgelbg/pinentry-touchid/sensor"
 	"github.com/keybase/go-keychain"
 )
 
@@ -121,7 +120,7 @@ func New() KeychainClient {
 	return KeychainClient{
 		logger:   logger,
 		promptFn: passwordPrompt,
-		authFn:   sensor.Authenticate,
+		authFn:   touchid.Authenticate,
 	}
 }
 
@@ -130,7 +129,7 @@ func WithLogger(logger *log.Logger) KeychainClient {
 	return KeychainClient{
 		logger:   logger,
 		promptFn: passwordPrompt,
-		authFn:   sensor.Authenticate,
+		authFn:   touchid.Authenticate,
 	}
 }
 
@@ -435,7 +434,7 @@ func fixPINBinary(oldPath string) error {
 
 func main() {
 	flag.Parse()
-	if !sensor.IsTouchIDAvailable() {
+	if !touchid.IsTouchIDAvailable() {
 		client, err := pinentry.LaunchCustom("pinentry-mac")
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Pinentry Launch returned error: %v\n", err)

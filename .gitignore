@@ -17,6 +17,7 @@ dist/
 
 # local binary
 pinentry
+pinentry-touchid
 
 # direnv
 .direnv/
